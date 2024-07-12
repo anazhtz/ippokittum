@@ -23,7 +23,10 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IppoKittum !',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.white),),
+        title: const Text(
+          'IppoKittum!',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         backgroundColor: Colors.teal,
         centerTitle: true,
         elevation: 0,
@@ -43,16 +46,26 @@ class _HomeViewState extends State<HomeView> {
             ),
             child: Consumer<TransactionViewModel>(
               builder: (context, viewModel, child) {
+                // Calculate the net amount for each contact
+                final contactNetAmounts = <String, double>{};
+
+                for (var transaction in viewModel.transactions) {
+                  final netAmount = contactNetAmounts[transaction.contact] ?? 0.0;
+                  contactNetAmounts[transaction.contact] = netAmount + (transaction.isCredit ? transaction.amount : -transaction.amount);
+                }
+
                 double totalCredit = 0.0;
                 double totalDebit = 0.0;
 
-                for (var transaction in viewModel.transactions) {
-                  if (transaction.isCredit) {
-                    totalCredit += transaction.amount;
-                  } else {
-                    totalDebit += transaction.amount;
+                // Sum the positive and negative net amounts
+                contactNetAmounts.forEach((contact, netAmount) {
+                  if (netAmount > 0) {
+                    totalCredit += netAmount;
+                  } else if (netAmount < 0) {
+                    totalDebit += netAmount.abs(); // Convert to positive for display
                   }
-                }
+                });
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -61,7 +74,7 @@ class _HomeViewState extends State<HomeView> {
                         Icon(Icons.arrow_downward, color: Colors.green, size: 32),
                         SizedBox(width: 8),
                         Text(
-                          'Credited',
+                          'Cash In',
                           style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -88,7 +101,7 @@ class _HomeViewState extends State<HomeView> {
                         Icon(Icons.arrow_upward, color: Colors.red, size: 32),
                         SizedBox(width: 8),
                         Text(
-                          'Debited',
+                          'Cash Out',
                           style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -141,11 +154,7 @@ class _HomeViewState extends State<HomeView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _buildCustomTextField(
-                              controller: descriptionController,
-                              labelText: 'Description',
-                              icon: Icons.description,
-                            ),
+                            _buildContactAutocomplete(),
                             const SizedBox(height: 16),
                             _buildCustomTextField(
                               controller: amountController,
@@ -153,8 +162,12 @@ class _HomeViewState extends State<HomeView> {
                               icon: Icons.attach_money,
                               keyboardType: TextInputType.number,
                             ),
-                            const SizedBox(height: 16),
-                            _buildContactAutocomplete(),
+                             const SizedBox(height: 16),
+                            _buildCustomTextField(
+                              controller: descriptionController,
+                              labelText: 'Description',
+                              icon: Icons.description,
+                            ),
                             const SizedBox(height: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -264,7 +277,7 @@ class _HomeViewState extends State<HomeView> {
                                       const SizedBox(height: 4),
                                       Text(
                                         transaction.contact,
-                                        style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 18),
+                                        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(

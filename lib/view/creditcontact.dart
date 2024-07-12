@@ -55,19 +55,19 @@ class CreditTransactionsView extends StatelessWidget {
                     backgroundColor: Colors.teal,
                     child: Text(
                       entry.key[0],
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   title: Text(
                     entry.key,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
                   ),
                   trailing: Text(
                     entry.value.toStringAsFixed(2),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
