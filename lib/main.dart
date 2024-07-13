@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Money Control App',
+        title: 'IppoKittum !',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

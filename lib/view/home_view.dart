@@ -276,7 +276,7 @@ class _HomeViewState extends State<HomeView> {
                                     );
                                   },
                                   child: const Text('Add Transaction',
-                                      style: TextStyle(fontSize: 16)),
+                                      style: TextStyle(fontSize: 16,color: Colors.white)),
                                 ),
                               ],
                             ),
@@ -416,55 +416,81 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildContactAutocomplete() {
-    return Consumer<TransactionViewModel>(
-      builder: (context, viewModel, child) {
-        final contacts =
-            viewModel.transactions.map((t) => t.contact).toSet().toList();
+Widget _buildContactAutocomplete() {
+  return Consumer<TransactionViewModel>(
+    builder: (context, viewModel, child) {
+      final contacts = viewModel.transactions.map((t) => t.contact).toSet().toList();
 
-        return Autocomplete<String>(
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            if (textEditingValue.text.isEmpty) {
-              return const Iterable<String>.empty();
-            }
-            return contacts.where((contact) {
-              return contact
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
-            });
-          },
-          onSelected: (String selection) {
-            contactController.text = selection;
-          },
-          fieldViewBuilder: (BuildContext context,
-              TextEditingController fieldTextEditingController,
-              FocusNode fieldFocusNode,
-              VoidCallback onFieldSubmitted) {
-            contactController = fieldTextEditingController;
-            return TextField(
-              controller: fieldTextEditingController,
-              focusNode: fieldFocusNode,
-              decoration: InputDecoration(
-                labelText: 'Contact',
-                prefixIcon: const Icon(Icons.contact_phone),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      return Autocomplete<String>(
+        optionsBuilder: (TextEditingValue textEditingValue) {
+          if (textEditingValue.text.isEmpty) {
+            return const Iterable<String>.empty();
+          }
+          return contacts.where((contact) {
+            return contact.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          });
+        },
+        onSelected: (String selection) {
+          contactController.text = selection;
+        },
+        fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController, FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+          contactController = fieldTextEditingController;
+          return TextField(
+            controller: fieldTextEditingController,
+            focusNode: fieldFocusNode,
+            decoration: InputDecoration(
+              labelText: 'Contact',
+              prefixIcon: const Icon(Icons.contact_phone),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+              fillColor: Colors.grey[200],
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.teal),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.teal, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        },
+        optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              elevation: 4.0,
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.822, // Adjust width as needed
+                constraints: BoxConstraints(maxHeight: 200),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
-                filled: true,
-                fillColor: Colors.grey[200],
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.teal),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.teal, width: 2),
-                  borderRadius: BorderRadius.circular(12),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  children: options.map((String contact) {
+                    return ListTile(
+                      title: Text(contact),
+                      onTap: () {
+                        onSelected(contact);
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+
 }
