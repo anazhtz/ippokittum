@@ -165,7 +165,7 @@ class _ContactDetailsViewState extends State<ContactDetailsView> {
                 ),
                 ListView.builder(
                   shrinkWrap: true, // Make the ListView take only as much space as it needs
-                  physics: NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                  physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
                   itemCount: transactions.length,
                   itemBuilder: (context, index) {
                     final transaction = transactions[index];
