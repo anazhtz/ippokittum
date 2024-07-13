@@ -2,7 +2,7 @@
 
 A new Flutter project.
 
-## Getting Started
+Money Control Application , Debit side and Credit Side
 
 This project is a starting point for a Flutter application.
 
