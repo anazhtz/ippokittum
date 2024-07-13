@@ -38,7 +38,8 @@ class CreditTransactionsView extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ContactDetailsView(contactName: entry.key),
+                    builder: (context) =>
+                        ContactDetailsView(contactName: entry.key),
                   ),
                 );
               },

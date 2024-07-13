@@ -25,7 +25,8 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: const Text(
           'IppoKittum!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.teal,
         centerTitle: true,
@@ -42,7 +43,8 @@ class _HomeViewState extends State<HomeView> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(30)),
             ),
             child: Consumer<TransactionViewModel>(
               builder: (context, viewModel, child) {
@@ -50,8 +52,12 @@ class _HomeViewState extends State<HomeView> {
                 final contactNetAmounts = <String, double>{};
 
                 for (var transaction in viewModel.transactions) {
-                  final netAmount = contactNetAmounts[transaction.contact] ?? 0.0;
-                  contactNetAmounts[transaction.contact] = netAmount + (transaction.isCredit ? transaction.amount : -transaction.amount);
+                  final netAmount =
+                      contactNetAmounts[transaction.contact] ?? 0.0;
+                  contactNetAmounts[transaction.contact] = netAmount +
+                      (transaction.isCredit
+                          ? transaction.amount
+                          : -transaction.amount);
                 }
 
                 double totalCredit = 0.0;
@@ -62,7 +68,8 @@ class _HomeViewState extends State<HomeView> {
                   if (netAmount > 0) {
                     totalCredit += netAmount;
                   } else if (netAmount < 0) {
-                    totalDebit += netAmount.abs(); // Convert to positive for display
+                    totalDebit +=
+                        netAmount.abs(); // Convert to positive for display
                   }
                 });
 
@@ -71,28 +78,39 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.arrow_downward, color: Colors.green, size: 32),
+                        Icon(Icons.arrow_downward,
+                            color: Colors.green, size: 32),
                         SizedBox(width: 8),
                         Text(
                           'Cash In',
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
                       onTap: () {
-                        List<Transaction> creditTransactions = viewModel.transactions.where((transaction) => transaction.isCredit).toList();
+                        List<Transaction> creditTransactions = viewModel
+                            .transactions
+                            .where((transaction) => transaction.isCredit)
+                            .toList();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreditTransactionsView(creditTransactions: creditTransactions),
+                            builder: (context) => CreditTransactionsView(
+                                creditTransactions: creditTransactions),
                           ),
                         );
                       },
                       child: Text(
                         '\u20B9 ${totalCredit.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -102,7 +120,10 @@ class _HomeViewState extends State<HomeView> {
                         SizedBox(width: 8),
                         Text(
                           'Cash Out',
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -113,14 +134,19 @@ class _HomeViewState extends State<HomeView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DebitTransactionsView(
-                              debitTransactions: viewModel.transactions.where((transaction) => !transaction.isCredit).toList(),
+                              debitTransactions: viewModel.transactions
+                                  .where((transaction) => !transaction.isCredit)
+                                  .toList(),
                             ),
                           ),
                         );
                       },
                       child: Text(
                         '\u20B9 ${totalDebit.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -145,7 +171,10 @@ class _HomeViewState extends State<HomeView> {
                         padding: EdgeInsets.all(16.0),
                         child: Text(
                           'Add New Transaction',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -162,7 +191,7 @@ class _HomeViewState extends State<HomeView> {
                               icon: Icons.attach_money,
                               keyboardType: TextInputType.number,
                             ),
-                             const SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildCustomTextField(
                               controller: descriptionController,
                               labelText: 'Description',
@@ -181,8 +210,10 @@ class _HomeViewState extends State<HomeView> {
                                       });
                                     },
                                     items: const [
-                                      DropdownMenuItem(value: true, child: Text('Credit')),
-                                      DropdownMenuItem(value: false, child: Text('Debit')),
+                                      DropdownMenuItem(
+                                          value: true, child: Text('Credit')),
+                                      DropdownMenuItem(
+                                          value: false, child: Text('Debit')),
                                     ],
                                   ),
                                 ),
@@ -195,32 +226,57 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    final description = descriptionController.text.trim();
-                                    final amountText = amountController.text.trim();
-                                    final contact = contactController.text.trim();
+                                    final description =
+                                        descriptionController.text.trim();
+                                    final amountText =
+                                        amountController.text.trim();
+                                    final contact =
+                                        contactController.text.trim();
                                     final amount = double.tryParse(amountText);
 
-                                    if (description.isNotEmpty && amount != null && contact.isNotEmpty) {
-                                      final newTransaction = Transaction(
-                                        description: description,
-                                        amount: amount,
-                                        isCredit: isCredit,
-                                        date: DateTime.now(),
-                                        contact: contact,
+                                    if (description.isEmpty ||
+                                        amount == null ||
+                                        contact.isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Please fill all fields.'),
+                                          backgroundColor: Colors.red,
+                                        ),
                                       );
-
-                                      Provider.of<TransactionViewModel>(context, listen: false)
-                                          .addTransaction(newTransaction);
-
-                                      descriptionController.clear();
-                                      amountController.clear();
-                                      contactController.clear();
-                                      setState(() {
-                                        isCredit = true;
-                                      });
+                                      return; // Exit onPressed if any field is empty
                                     }
+
+                                    final newTransaction = Transaction(
+                                      description: description,
+                                      amount: amount,
+                                      isCredit: isCredit,
+                                      date: DateTime.now(),
+                                      contact: contact,
+                                    );
+
+                                    Provider.of<TransactionViewModel>(context,
+                                            listen: false)
+                                        .addTransaction(newTransaction);
+
+                                    descriptionController.clear();
+                                    amountController.clear();
+                                    contactController.clear();
+                                    setState(() {
+                                      isCredit = true;
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Transaction added successfully!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
                                   },
-                                  child: const Text('Add Transaction', style: TextStyle(fontSize: 16)),
+                                  child: const Text('Add Transaction',
+                                      style: TextStyle(fontSize: 16)),
                                 ),
                               ],
                             ),
@@ -234,11 +290,14 @@ class _HomeViewState extends State<HomeView> {
                           if (transactions.isEmpty) {
                             return const Padding(
                               padding: EdgeInsets.all(16.0),
-                              child: Center(child: Text('No transactions yet', style: TextStyle(fontSize: 16))),
+                              child: Center(
+                                  child: Text('No transactions yet',
+                                      style: TextStyle(fontSize: 16))),
                             );
                           }
                           transactions.sort((a, b) => b.date.compareTo(a.date));
-                          final lastTenTransactions = transactions.take(10).toList();
+                          final lastTenTransactions =
+                              transactions.take(10).toList();
                           return ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -246,7 +305,8 @@ class _HomeViewState extends State<HomeView> {
                             itemBuilder: (context, index) {
                               final transaction = lastTenTransactions[index];
                               return Card(
-                                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -254,35 +314,48 @@ class _HomeViewState extends State<HomeView> {
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.all(16),
                                   leading: CircleAvatar(
-                                    backgroundColor: transaction.isCredit ? Colors.green : Colors.red,
+                                    backgroundColor: transaction.isCredit
+                                        ? Colors.green
+                                        : Colors.red,
                                     child: Icon(
-                                      transaction.isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+                                      transaction.isCredit
+                                          ? Icons.arrow_downward
+                                          : Icons.arrow_upward,
                                       color: Colors.white,
                                     ),
                                   ),
                                   title: Text(
                                     transaction.description,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '\u20B9 ${transaction.amount.toStringAsFixed(2)} - ${transaction.isCredit ? 'Credit' : 'Debit'}',
                                         style: TextStyle(
-                                          color: transaction.isCredit ? Colors.green : Colors.red,
+                                          color: transaction.isCredit
+                                              ? Colors.green
+                                              : Colors.red,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         transaction.contact,
-                                        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         '${transaction.date.day}/${transaction.date.month}/${transaction.date.year} ${transaction.date.hour}:${transaction.date.minute}',
-                                        style: const TextStyle(color: Colors.black38),
+                                        style: const TextStyle(
+                                            color: Colors.black38),
                                       ),
                                     ],
                                   ),
@@ -290,7 +363,10 @@ class _HomeViewState extends State<HomeView> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ContactDetailsView(contactName: transaction.contact),
+                                        builder: (context) =>
+                                            ContactDetailsView(
+                                                contactName:
+                                                    transaction.contact),
                                       ),
                                     );
                                   },
@@ -343,7 +419,8 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildContactAutocomplete() {
     return Consumer<TransactionViewModel>(
       builder: (context, viewModel, child) {
-        final contacts = viewModel.transactions.map((t) => t.contact).toSet().toList();
+        final contacts =
+            viewModel.transactions.map((t) => t.contact).toSet().toList();
 
         return Autocomplete<String>(
           optionsBuilder: (TextEditingValue textEditingValue) {
@@ -351,13 +428,18 @@ class _HomeViewState extends State<HomeView> {
               return const Iterable<String>.empty();
             }
             return contacts.where((contact) {
-              return contact.toLowerCase().contains(textEditingValue.text.toLowerCase());
+              return contact
+                  .toLowerCase()
+                  .contains(textEditingValue.text.toLowerCase());
             });
           },
           onSelected: (String selection) {
             contactController.text = selection;
           },
-          fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController, FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+          fieldViewBuilder: (BuildContext context,
+              TextEditingController fieldTextEditingController,
+              FocusNode fieldFocusNode,
+              VoidCallback onFieldSubmitted) {
             contactController = fieldTextEditingController;
             return TextField(
               controller: fieldTextEditingController,
