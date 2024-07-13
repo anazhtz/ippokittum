@@ -17,6 +17,212 @@ class _ContactDetailsViewState extends State<ContactDetailsView> {
   final TextEditingController amountController = TextEditingController();
   bool isCredit = true;
 
+
+ void _showEditDeleteDialog(Transaction transaction) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Edit or Delete Transaction'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Description: ${transaction.description}'),
+          Text('Amount: ${transaction.amount}'),
+          Text('Type: ${transaction.isCredit ? 'Credit' : 'Debit'}'),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Close dialog
+            _editTransaction(transaction); // Edit transaction
+          },
+          child: const Text('Edit'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Close dialog
+            _deleteTransaction(transaction); // Delete transaction
+          },
+          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+}
+void _editTransaction(Transaction transaction) {
+  bool isCredit = transaction.isCredit; 
+  descriptionController.text = transaction.description;
+  amountController.text = transaction.amount.toString();
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      width: 40.0,
+                      height: 4.0,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  const Text(
+                    'Edit Transaction',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: amountController,
+                    decoration: const InputDecoration(
+                      labelText: 'Amount',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.attach_money),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Type:',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Radio<bool>(
+                              value: true,
+                              groupValue: isCredit,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  isCredit = value ?? true;
+                                });
+                              },
+                            ),
+                            const Text('Credit'),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Radio<bool>(
+                              value: false,
+                              groupValue: isCredit,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  isCredit = value ?? false;
+                                });
+                              },
+                            ),
+                            const Text('Debit'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close bottom sheet
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          final updatedTransaction = Transaction(
+                            description: descriptionController.text,
+                            amount: double.parse(amountController.text),
+                            isCredit: isCredit,
+                            date: transaction.date,
+                            contact: transaction.contact,
+                          );
+
+                          Provider.of<TransactionViewModel>(context, listen: false)
+                              .updateTransaction(transaction, updatedTransaction);
+
+                          Navigator.pop(context); // Close bottom sheet after update
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+
+void _deleteTransaction(Transaction transaction) {
+  Provider.of<TransactionViewModel>(context, listen: false).deleteTransaction(transaction);
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,55 +369,59 @@ class _ContactDetailsViewState extends State<ContactDetailsView> {
                     ),
                   ),
                 ),
-                ListView.builder(
-                  shrinkWrap: true, // Make the ListView take only as much space as it needs
-                  physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
-                  itemCount: transactions.length,
-                  itemBuilder: (context, index) {
-                    final transaction = transactions[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          transaction.isCredit ? Icons.arrow_upward : Icons.arrow_downward,
-                          color: transaction.isCredit ? Colors.green : Colors.red,
-                        ),
-                        title: Text(
-                          transaction.description,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${transaction.amount.toStringAsFixed(2)} - ${transaction.isCredit ? 'Credit' : 'Debit'}',
-                        ),
-                        trailing: Column(
-                          children: [
-                            Text(
-                              '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              '${transaction.date.hour}:${transaction.date.minute}:${transaction.date.second}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+             ListView.builder(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  itemCount: transactions.length,
+  itemBuilder: (context, index) {
+    final transaction = transactions[index];
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Icon(
+          transaction.isCredit ? Icons.arrow_upward : Icons.arrow_downward,
+          color: transaction.isCredit ? Colors.green : Colors.red,
+        ),
+        title: Text(
+          transaction.description,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Text(
+          '${transaction.amount.toStringAsFixed(2)} - ${transaction.isCredit ? 'Credit' : 'Debit'}',
+        ),
+        trailing: Column(
+          children: [
+            Text(
+              '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+            Text(
+              '${transaction.date.hour}:${transaction.date.minute}:${transaction.date.second}',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          _showEditDeleteDialog(transaction);
+        },
+      ),
+    );
+  },
+)
+
               ],
             ),
           );

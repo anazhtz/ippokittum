@@ -15,15 +15,21 @@ class TransactionViewModel extends ChangeNotifier {
   }
 
   /// Updates an existing transaction in the Hive box and notifies listeners.
-  void updateTransaction(int index, Transaction updatedTransaction) {
-    transactionBox.putAt(index, updatedTransaction);
-    notifyListeners();
+  void updateTransaction(Transaction oldTransaction, Transaction updatedTransaction) {
+    final index = transactionBox.values.toList().indexWhere((transaction) => transaction == oldTransaction);
+    if (index != -1) {
+      transactionBox.putAt(index, updatedTransaction);
+      notifyListeners();
+    }
   }
 
   /// Deletes a transaction from the Hive box and notifies listeners.
-  void deleteTransaction(int index) {
-    transactionBox.deleteAt(index);
-    notifyListeners();
+  void deleteTransaction(Transaction transaction) {
+    final index = transactionBox.values.toList().indexWhere((t) => t == transaction);
+    if (index != -1) {
+      transactionBox.deleteAt(index);
+      notifyListeners();
+    }
   }
 
   /// Calculates the total credits for a given contact.
